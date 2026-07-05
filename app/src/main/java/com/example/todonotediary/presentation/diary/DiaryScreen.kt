@@ -64,9 +64,7 @@ fun DiaryScreen(
             DiaryHeader(
                 hasDateFilter = uiState.selectedDate != null,
                 onClearDateFilter = { viewModel.clearDateFilter() },
-                onCalendarClick = { viewModel.toggleCalendarVisibility() },
-                sentimentAnalysisEnabled = uiState.sentimentAnalysisEnabled,
-                onSentimentToggle = { viewModel.toggleSentimentAnalysis(it) }
+                onCalendarClick = { viewModel.toggleCalendarVisibility() }
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -154,9 +152,7 @@ fun DiaryScreen(
 fun DiaryHeader(
     hasDateFilter: Boolean = false,
     onClearDateFilter: () -> Unit = {},
-    onCalendarClick: () -> Unit = {},
-    sentimentAnalysisEnabled: Boolean = false,
-    onSentimentToggle: (Boolean) -> Unit = {}
+    onCalendarClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -191,55 +187,6 @@ fun DiaryHeader(
                         contentDescription = "Calendar"
                     )
                 }
-            }
-        }
-        
-        // Sentiment Analysis Toggle
-        Spacer(modifier = Modifier.height(8.dp))
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Psychology,
-                        contentDescription = "AI Analysis",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Column {
-                        Text(
-                            text = "AI Sentiment Analysis",
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "Nhận phản hồi từ AI sau khi viết nhật ký",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                        )
-                    }
-                }
-                
-                Switch(
-                    checked = sentimentAnalysisEnabled,
-                    onCheckedChange = onSentimentToggle,
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = MaterialTheme.colorScheme.primary,
-                        checkedTrackColor = MaterialTheme.colorScheme.primaryContainer
-                    )
-                )
             }
         }
     }

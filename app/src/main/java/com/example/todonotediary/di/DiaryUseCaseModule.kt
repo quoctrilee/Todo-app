@@ -1,8 +1,6 @@
 package com.example.todonotediary.di
 
-import com.example.todonotediary.domain.repository.AIRepository
 import com.example.todonotediary.domain.repository.DiaryRepository
-import com.example.todonotediary.domain.repository.SentimentRepository
 import com.example.todonotediary.domain.usecase.diary.*
 import dagger.Module
 import dagger.Provides
@@ -17,9 +15,7 @@ object DiaryUseCaseModule {
     @Provides
     @Singleton
     fun provideDiaryUseCases(
-        repository: DiaryRepository,
-        sentimentRepository: SentimentRepository,
-        aiRepository: AIRepository
+        repository: DiaryRepository
     ): DiaryUseCases {
         val getDiariesUseCase = GetDiariesUseCase(repository)
         val getDiaryByIdUseCase = GetDiaryByIdUseCase(repository)
@@ -32,9 +28,7 @@ object DiaryUseCaseModule {
             deleteDiary = DeleteDiaryUseCase(repository),
             syncDiaries = SyncDiariesUseCase(repository),
             getDiariesByDateUseCase = GetDiariesByDateUseCase(repository),
-            getDiariesByTitleAndContentUseCase = GetDiariesByTitleAndContentUseCase(repository),
-            analyzeDiarySentiment = AnalyzeDiarySentimentUseCase(sentimentRepository),
-            generateDiaryResponse = GenerateDiaryResponseUseCase(aiRepository)
+            getDiariesByTitleAndContentUseCase = GetDiariesByTitleAndContentUseCase(repository)
         )
     }
 }

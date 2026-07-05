@@ -2,7 +2,6 @@ package com.example.todonotediary.presentation.diary
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.todonotediary.data.local.preferences.DiaryPreferences
 import com.example.todonotediary.domain.model.DiaryEntity
 import com.example.todonotediary.domain.usecase.auth.AuthUseCases
 import com.example.todonotediary.domain.usecase.diary.DiaryUseCases
@@ -19,8 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DiaryViewModel @Inject constructor(
     private val diaryUseCases: DiaryUseCases,
-    private val authUseCases: AuthUseCases,
-    private val diaryPreferences: DiaryPreferences
+    private val authUseCases: AuthUseCases
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(DiaryUiState())
     val uiState = _uiState.asStateFlow()
@@ -40,8 +38,7 @@ class DiaryViewModel @Inject constructor(
             val normalizedDate = normalizeDate(currentDate)
             _uiState.update { 
                 it.copy(
-                    selectedDate = normalizedDate,
-                    sentimentAnalysisEnabled = diaryPreferences.isSentimentAnalysisEnabled()
+                    selectedDate = normalizedDate
                 )
             }
             // Get diaries for the current date
@@ -49,11 +46,6 @@ class DiaryViewModel @Inject constructor(
         } else {
             _uiState.update { it.copy(error = "User not authenticated") }
         }
-    }
-    
-    fun toggleSentimentAnalysis(enabled: Boolean) {
-        diaryPreferences.setSentimentAnalysisEnabled(enabled)
-        _uiState.update { it.copy(sentimentAnalysisEnabled = enabled) }
     }
 
     fun onSearchQueryChanged(query: String) {
@@ -228,6 +220,5 @@ data class DiaryUiState(
     val searchQuery: String = "",
     val isLoading: Boolean = false,
     val error: String? = null,
-    val isCalendarVisible: Boolean = false,
-    val sentimentAnalysisEnabled: Boolean = false
+    val isCalendarVisible: Boolean = false
 )

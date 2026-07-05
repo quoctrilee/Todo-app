@@ -6,8 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.todonotediary.data.local.preferences.DiaryPreferences
-import com.example.todonotediary.domain.model.DiaryResponse
 import com.example.todonotediary.domain.usecase.auth.AuthUseCases
 import com.example.todonotediary.domain.usecase.diary.DiaryUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,8 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AddDiaryViewModel @Inject constructor(
     private val diaryUseCases: DiaryUseCases,
-    private val authUseCases: AuthUseCases,
-    private val diaryPreferences: DiaryPreferences
+    private val authUseCases: AuthUseCases
 ) : ViewModel() {
 
     companion object {
@@ -91,18 +88,7 @@ class AddDiaryViewModel @Inject constructor(
                     userId = currentUser.uid // Sử dụng uid từ currentUser
                 ).fold(
                     onSuccess = { diary ->
-                        // Check if sentiment analysis is enabled BEFORE emitting success
-                        val shouldAnalyzeSentiment = diaryPreferences.isSentimentAnalysisEnabled()
-                        
-                        if (shouldAnalyzeSentiment) {
-                            // Set analyzing state BEFORE analyzing
-                            state = state.copy(isAnalyzingSentiment = true)
-                            _uiEvent.emit(UiEvent.SaveDiarySuccess)
-                            analyzeSentimentAndGenerateResponse()
-                        } else {
-                            // No sentiment analysis, emit success and user can navigate back
-                            _uiEvent.emit(UiEvent.SaveDiarySuccess)
-                        }
+                        _uiEvent.emit(UiEvent.SaveDiarySuccess)
                     },
                     onFailure = { error ->
                         _uiEvent.emit(UiEvent.ShowError(error.message ?: "Failed to save diary"))
@@ -117,46 +103,6 @@ class AddDiaryViewModel @Inject constructor(
         }
     }
     
-    /**
-     * Analyze diary sentiment and generate AI response
-     */
-    private fun analyzeSentimentAndGenerateResponse() {
-        viewModelScope.launch {
-            try {
-                Log.d(TAG, "🔍 Starting sentiment analysis...")
-                // State already set to isAnalyzingSentiment = true in saveDiary()
-                
-                // Step 1: Analyze sentiment
-                val sentimentResult = diaryUseCases.analyzeDiarySentiment(state.content)
-                
-                sentimentResult.fold(
-                    onSuccess = { sentiment ->
-                        Log.d(TAG, "✅ Sentiment: ${sentiment.label} (${sentiment.score})")
-                        
-                        // Step 2: Generate AI response based on sentiment
-                        diaryUseCases.generateDiaryResponse(state.content, sentiment).fold(
-                            onSuccess = { diaryResponse ->
-                                Log.d(TAG, "✅ AI Response generated")
-                                _uiEvent.emit(UiEvent.ShowDiaryResponse(diaryResponse))
-                            },
-                            onFailure = { error ->
-                                Log.e(TAG, "❌ Failed to generate response: ${error.message}")
-                                // Don't show error to user, just log it
-                            }
-                        )
-                    },
-                    onFailure = { error ->
-                        Log.e(TAG, "❌ Sentiment analysis failed: ${error.message}")
-                        // Don't show error to user, just log it
-                    }
-                )
-            } catch (e: Exception) {
-                Log.e(TAG, "❌ Exception in sentiment analysis: ${e.message}", e)
-            } finally {
-                state = state.copy(isAnalyzingSentiment = false)
-            }
-        }
-    }
 }
 
 // State class to manage all state in one place
@@ -165,8 +111,7 @@ data class AddDiaryState(
     val content: String = "",
     val mood: String = "happy",
     val selectedDate: Long = System.currentTimeMillis(),
-    val isLoading: Boolean = false,
-    val isAnalyzingSentiment: Boolean = false
+    val isLoading: Boolean = false
 )
 
 // Event sealed class for UI events
@@ -182,5 +127,4 @@ sealed class AddDiaryEvent {
 sealed class UiEvent {
     object SaveDiarySuccess : UiEvent()
     data class ShowError(val message: String) : UiEvent()
-    data class ShowDiaryResponse(val response: DiaryResponse) : UiEvent()
 }
