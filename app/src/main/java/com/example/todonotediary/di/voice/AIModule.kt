@@ -1,4 +1,4 @@
-package com.example.todonotediary.di
+package com.example.todonotediary.di.voice
 
 import android.content.Context
 import com.example.todonotediary.BuildConfig

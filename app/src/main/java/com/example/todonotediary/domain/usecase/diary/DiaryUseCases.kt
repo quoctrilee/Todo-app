@@ -1,6 +1,8 @@
 package com.example.todonotediary.domain.usecase.diary
 
-data class DiaryUseCases(
+import javax.inject.Inject
+
+data class DiaryUseCases @Inject constructor(
     val getDiaries: GetDiariesUseCase,
     val getDiaryById: GetDiaryByIdUseCase,
     val addDiary: AddDiaryUseCase,

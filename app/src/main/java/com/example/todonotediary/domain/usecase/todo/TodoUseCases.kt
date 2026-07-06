@@ -1,6 +1,8 @@
 package com.example.todonotediary.domain.usecase.todo
 
-data class TodoUseCases(
+import javax.inject.Inject
+
+data class TodoUseCases @Inject constructor(
     val getTodos: GetTodosUseCase,
     val getTodoById: GetTodoByIdUseCase,
     val getTodoUpcoming: GetTodoUpcomingUseCase,

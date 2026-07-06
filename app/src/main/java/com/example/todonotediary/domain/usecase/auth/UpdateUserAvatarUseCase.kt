@@ -1,4 +1,4 @@
-package com.example.todonotediary.domain.usecase.user
+package com.example.todonotediary.domain.usecase.auth
 
 import com.example.todonotediary.domain.repository.AuthRepository
 import javax.inject.Inject

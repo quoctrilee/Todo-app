@@ -1,4 +1,4 @@
-package com.example.todonotediary.di
+package com.example.todonotediary.di.voice
 
 import com.example.todonotediary.domain.repository.AIRepository
 import com.example.todonotediary.domain.usecase.ai.AIUseCases

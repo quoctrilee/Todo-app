@@ -17,6 +17,12 @@ import javax.inject.Singleton
 abstract class RepositoryModule {
     @Binds
     @Singleton
+    abstract fun bindAuthRepository(
+        impl: com.example.todonotediary.data.repository.AuthRepositoryImpl
+    ): com.example.todonotediary.domain.repository.AuthRepository
+
+    @Binds
+    @Singleton
     abstract fun bindTodoRepository(
         impl: TodoRepositoryImpl
     ): TodoRepository
